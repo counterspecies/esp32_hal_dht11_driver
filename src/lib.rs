@@ -1,8 +1,8 @@
 #![no_std]
 
-use embedded_hal::delay::DelayNs;
 use esp_hal::gpio::{DriveMode, Flex, InputConfig, OutputConfig, Pin};
 use esp_hal::time::Instant;
+use esp_hal::delay::Delay;
 
 #[derive(Debug)]
 pub enum SensorError {
@@ -17,19 +17,16 @@ pub struct Reading {
     pub temperature: i8,
 }
 
-pub struct DHT11<'a, D> {
+pub struct DHT11<'a> {
     pub pin: Flex<'a>,
-    pub delay: D,
+    pub delay: Delay,
 }
 
-const ERROR_CHECKSUM: u8 = 254; // Error code indicating checksum mismatch.
+const _ERROR_CHECKSUM: u8 = 254; // Error code indicating checksum mismatch.
 const ERROR_TIMEOUT: u8 = 253; // Error code indicating a timeout occurred during reading.
 const TIMEOUT_DURATION: u64 = 1000; // Duration (in milliseconds) to wait before timing out.
-impl<'a, D> DHT11<'a, D>
-where
-    D: DelayNs,
-{
-    pub fn new(pin: impl Pin + 'a, delay: D) -> Self {
+impl<'a> DHT11<'a> {
+    pub fn new(pin: impl Pin + 'a, delay: Delay) -> Self {
         let mut pin = Flex::new(pin);
         let out_config = OutputConfig::default().with_drive_mode(DriveMode::OpenDrain);
         pin.apply_output_config(&out_config);
@@ -57,9 +54,9 @@ where
     fn read_raw(&mut self) -> Result<[u8; 5], SensorError> {
         self.pin.set_output_enable(true);
         self.pin.set_low();
-        self.delay.delay_ms(20);
+        self.delay.delay_millis(20); 
         self.pin.set_high();
-        self.delay.delay_us(40);
+        self.delay.delay_micros(40);
         self.pin.set_input_enable(true);
 
         let now = Instant::now();
@@ -70,14 +67,14 @@ where
                 return Err(SensorError::Timeout);
             }
         }
-
+ 
         if self.pin.is_low() {
-            self.delay.delay_us(80);
+            self.delay.delay_micros(80);
             if self.pin.is_low() {
                 return Err(SensorError::Timeout);
             }
         }
-        self.delay.delay_us(80);
+        self.delay.delay_micros(80);
         let mut buf = [0; 5];
         for idx in 0..5 {
             buf[idx] = self.read_byte();
@@ -100,7 +97,7 @@ where
         let mut buf = 0u8;
         for idx in 0..8u8 {
             while self.pin.is_low() {}
-            self.delay.delay_us(30);
+            self.delay.delay_micros(30); 
             if self.pin.is_high() {
                 buf |= 1 << (7 - idx);
             }
