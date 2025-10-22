@@ -11,7 +11,7 @@ repository = "https://github.com/counterspecies/esp32_hal_dht11_driver"
 homepage = "https://github.com/counterspecies/esp32_hal_dht11_driver"
 documentation = "https://github.com/counterspecies/esp32_hal_dht11_driver"
 [lib]
-name = "https://github.com/counterspecies/esp32_hal_dht11_driver"
+name = "esp32_hal_dht11_driver"
 path = "src/lib.rs"
 
 
