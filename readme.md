@@ -1,7 +1,7 @@
 
 ## esp32_hal-dht11-driver
 
-esp32_hal-dht11-driver is is a Rust crate that reads temperature and humidity data from the DHT11 sensors for esp32 series. Forked from https://github.com/nor236/esp32-dht11-rs, and updated to remove depancency from the embedded_hal crate, resolving some dependancy issues with certain esp32 crates. 
+This Rust library is a driver for DHT11 temperature and humidity sensor for esp32 series. Forked from https://github.com/nor236/esp32-dht11-rs, and updated to remove depancency from the embedded_hal crate, resolving some dependancy issues with certain esp32 crates. 
 
 
 ## Usage
