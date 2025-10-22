@@ -26,4 +26,4 @@ esp32_hal-dht11-driver is is a Rust crate that reads temperature and humidity da
  ```
 
 
-![dht11](image\dht11_temperature_humidity_sensor.jpg)
+![dht11](image/dht11_temperature_humidity_sensor.jpg)
