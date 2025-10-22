@@ -10,6 +10,7 @@ repository = "https://github.com/counterspecies/esp32_hal_dht11_driver"
 
 homepage = "https://github.com/counterspecies/esp32_hal_dht11_driver"
 documentation = "https://github.com/counterspecies/esp32_hal_dht11_driver"
+
 [lib]
 name = "esp32_hal_dht11_driver"
 path = "src/lib.rs"
@@ -17,9 +18,7 @@ path = "src/lib.rs"
 
 
 [dependencies]
-esp-hal = { version = "1.0.0-beta.1", features = [
-    "unstable",
-], default-features = false }
+esp-hal = { version = "=1.0.0-rc.1", features = ["esp32", "unstable"] } 
 
 # esp32 = { version = "0.37.0" }
 # esp32c2 = { version = "0.26.0" }
