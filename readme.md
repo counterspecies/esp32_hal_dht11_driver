@@ -1,5 +1,5 @@
 
-## esp32_hal-dht11-driver
+## DHT11 Driver
 
 This Rust library is a driver for DHT11 temperature and humidity sensor for esp32 series. Forked from https://github.com/nor236/esp32-dht11-rs, and updated to remove depancency from the embedded_hal crate, resolving some dependancy issues with certain esp32 crates. 
 
