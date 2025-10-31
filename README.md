@@ -16,7 +16,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-esp32_hal_dht11_driver = "0.1"
+esp32_hal_dht11_driver = "0.2.1"
 ```
 
 ## Usage

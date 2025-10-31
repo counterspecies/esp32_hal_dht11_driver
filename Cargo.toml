@@ -6,10 +6,10 @@ version = "0.2.1"
 keywords = ["embedded", "no-std", "dht11", "esp32", "esp32-wrover"]
 description = "A Rust crate that reads temperature and humidity data from the DHT11 sensors for esp32 series, updated to remove depancancy of the embedded_hal crate"
 license = "MIT"
-repository = "https://github.com/counterspecies/esp32_hal_dht11_driver"
+repository = "https://github.com/eliperez-dev/esp32_hal_dht11_driver"
 
-homepage = "https://github.com/counterspecies/esp32_hal_dht11_driver"
-documentation = "https://github.com/counterspecies/esp32_hal_dht11_driver"
+homepage = "https://github.com/eliperez-dev/esp32_hal_dht11_driver"
+documentation = "https://github.com/eliperez-dev/esp32_hal_dht11_driver"
 
 [lib]
 name = "esp32_hal_dht11_driver"
