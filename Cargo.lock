@@ -432,7 +432,7 @@ dependencies = [
 
 [[package]]
 name = "esp32_hal_dht11_driver"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "esp-hal",
 ]
