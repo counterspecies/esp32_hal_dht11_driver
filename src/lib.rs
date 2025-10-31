@@ -1,9 +1,7 @@
 #![no_std]
 
-use esp_hal::gpio::{DriveMode, Flex, InputConfig, OutputConfig, Pin};
 use esp_hal::time::Instant;
 use esp_hal::delay::Delay;
-
 #[derive(Debug)]
 pub enum SensorError {
     ChecksumMismatch,
@@ -17,26 +15,20 @@ pub struct Reading {
     pub temperature: i8,
 }
 
-pub struct DHT11<'a> {
-    pub pin: Flex<'a>,
+pub struct DHT11 {
     pub delay: Delay,
 }
 
 const _ERROR_CHECKSUM: u8 = 254; // Error code indicating checksum mismatch.
 const ERROR_TIMEOUT: u8 = 253; // Error code indicating a timeout occurred during reading.
 const TIMEOUT_DURATION: u64 = 1000; // Duration (in milliseconds) to wait before timing out.
-impl<'a> DHT11<'a> {
-    pub fn new(pin: impl Pin + 'a, delay: Delay) -> Self {
-        let mut pin = Flex::new(pin);
-        let out_config = OutputConfig::default().with_drive_mode(DriveMode::OpenDrain);
-        pin.apply_output_config(&out_config);
-        let input_config = InputConfig::default();
-        pin.apply_input_config(&input_config);
-        Self { pin, delay }
+impl DHT11 {
+    pub fn new(delay: Delay) -> Self {
+        Self { delay }
     }
 
-    pub fn read(&mut self) -> Result<Reading, SensorError> {
-        let data = self.read_raw()?;
+    pub fn read(&mut self, pin: &mut esp_hal::gpio::Flex) -> Result<Reading, SensorError> {
+        let data = self.read_raw(pin)?;
         let rh = data[0];
         let temp_signed = data[2];
         let temp = {
@@ -51,33 +43,34 @@ impl<'a> DHT11<'a> {
         })
     }
 
-    fn read_raw(&mut self) -> Result<[u8; 5], SensorError> {
-        self.pin.set_output_enable(true);
-        self.pin.set_low();
+    fn read_raw(&mut self, pin: &mut esp_hal::gpio::Flex) -> Result<[u8; 5], SensorError> {
+        pin.set_output_enable(true);
+        pin.set_low();
         self.delay.delay_millis(20); 
-        self.pin.set_high();
+        pin.set_high();
         self.delay.delay_micros(40);
-        self.pin.set_input_enable(true);
+        pin.set_input_enable(true);
 
         let now = Instant::now();
 
-        while self.pin.is_high() {
+        while pin.is_high() {
             if now.elapsed().as_millis() > TIMEOUT_DURATION {
                 // println!("wait for low timeout.");
                 return Err(SensorError::Timeout);
             }
         }
  
-        if self.pin.is_low() {
+        if pin.is_low() {
             self.delay.delay_micros(80);
-            if self.pin.is_low() {
+            if pin.is_low() {
                 return Err(SensorError::Timeout);
             }
         }
         self.delay.delay_micros(80);
         let mut buf = [0; 5];
-        for idx in 0..5 {
-            buf[idx] = self.read_byte();
+        let tmp = 0..5;
+        for idx in tmp {
+            buf[idx] = self.read_byte(pin);
             if buf[idx] == ERROR_TIMEOUT {
                 return Err(SensorError::Timeout);
             }
@@ -87,21 +80,21 @@ impl<'a> DHT11<'a> {
             .wrapping_add(buf[2])
             .wrapping_add(buf[3]);
 
-        if buf[4] == (sum & 0xFF) {
-            return Ok(buf); // Success
+        if buf[4] == sum {
+            Ok(buf)// Success
         } else {
-            return Err(SensorError::ChecksumMismatch);
+            Err(SensorError::ChecksumMismatch)
         }
     }
-    fn read_byte(&mut self) -> u8 {
+    fn read_byte(&mut self, pin: &mut esp_hal::gpio::Flex) -> u8 {
         let mut buf = 0u8;
         for idx in 0..8u8 {
-            while self.pin.is_low() {}
+            while pin.is_low() {}
             self.delay.delay_micros(30); 
-            if self.pin.is_high() {
+            if pin.is_high() {
                 buf |= 1 << (7 - idx);
             }
-            while self.pin.is_high() {}
+            while pin.is_high() {}
         }
         buf
     }
